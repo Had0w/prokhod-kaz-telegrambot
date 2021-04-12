@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class StartCommand implements Command{
     private SendBotMessageServiceImpl sendBotMessageService;
 
-    private final String START_COMMAND_MESSAGE = "Добро пожаловать в телеграмм бот для определения коэффициента опоздания," +
+    public static final String START_COMMAND_MESSAGE = "Добро пожаловать в телеграмм бот для определения коэффициента опоздания," +
             "по умолчанию рабочий день выставлен с 8:00 до 17:00 (обед с 12:00 до 13:00), можно изменить в настройках";
     /**
      *

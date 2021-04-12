@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class UnknownCommand implements Command{
 
     private SendBotMessageServiceImpl sendBotMessageService;
-    private final String UNKNOWN_COMMAND_MESSAGE = "Неизвестная команда";
+    public static final String UNKNOWN_COMMAND_MESSAGE = "Неизвестная команда";
 
     public UnknownCommand(SendBotMessageServiceImpl sendBotMessageService) {
         this.sendBotMessageService = sendBotMessageService;
