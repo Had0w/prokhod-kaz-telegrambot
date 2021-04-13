@@ -1,0 +1,14 @@
+# Release Notes
+
+## 0.3.0-SNAPSHOT
+
+*   PKAZB-5: added deployment process to the project
+
+## 0.2.0-SNAPSHOT
+
+*   PKAZB-2: implemented Command pattern for handling Telegram Bot commands
+
+## 0.1.0-SNAPSHOT
+
+*   PKAZB-1: added stub telegram bot
+*   PKAZB-0: added SpringBoot skeleton project
