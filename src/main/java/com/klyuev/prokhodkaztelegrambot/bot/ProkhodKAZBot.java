@@ -16,9 +16,9 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
     private final String COMMAND_PREFIX = "/";
     private final CommandContainer commandContainer;
     private SendBotMessageServiceImpl sendBotMessageService;
-    @Value("bot.name")
+    @Value("${bot.name}")
     private String botName;
-    @Value("bot.token")
+    @Value("${bot.token}")
     private String botToken;
     @Override
     public String getBotUsername() {

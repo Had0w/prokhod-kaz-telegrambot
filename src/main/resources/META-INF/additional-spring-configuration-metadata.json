@@ -1,8 +1,0 @@
-{
-  "properties": [
-    {
-      "name": "bot.name",
-      "type": "java.lang.String",
-      "description": "Description for bot.name."
-  }
-] }
