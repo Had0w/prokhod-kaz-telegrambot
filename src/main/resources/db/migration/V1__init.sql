@@ -7,5 +7,3 @@ isAtWork boolean DEFAULT FALSE,
 role varchar(20) DEFAULT 'USER',
 lastUpdate timestamp with time zone
 );
-
-INSERT INTO users (chatId, timeOfStartWorkDay, timeOfEndWorkDay, role) VALUES (786831575, '7:30', '16:30', 'ADMIN');

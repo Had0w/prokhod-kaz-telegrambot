@@ -1,22 +1,13 @@
 package com.klyuev.prokhodkaztelegrambot.service;
-
 import com.klyuev.prokhodkaztelegrambot.entity.User;
-import com.klyuev.prokhodkaztelegrambot.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class UserService {
-    private UserRepository userRepository;
+import java.util.Optional;
 
-    @Autowired
-    public void setUserRepository(UserRepository userRepository) {this.userRepository = userRepository;}
 
-    public void addNewUser(User user) {
-        userRepository.save(user);
-    }
+public interface UserService {
+    void addNewUser(User user);
 
-    public User findByChatId(long chatId) {
-        return userRepository.findById(chatId).get();
-    }
+    Optional<User> findByChatId(long chatId);
+
+    boolean containsUser(long chatId);
 }

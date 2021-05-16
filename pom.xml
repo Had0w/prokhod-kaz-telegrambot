@@ -24,17 +24,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<version>2.3.10.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 			<version>5.2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.18</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -90,11 +85,10 @@
 					<user>postgres</user>
 					<password>11Kosmea9</password>
 					<schemas>
-						<schema>boot</schema>
+						<schema>public</schema>
 					</schemas>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
