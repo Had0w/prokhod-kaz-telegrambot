@@ -1,5 +1,8 @@
 package com.klyuev.prokhodkaztelegrambot.entity;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,8 +26,20 @@ public class User {
     @Column(name = "role")
     @Enumerated(value = EnumType.STRING)
     private Role role;
+    @Column(name = "coeff")
+    private double coeff;
 
     public User() {
+    }
+
+    public User(long chatID) {
+        this.chatID = chatID;
+        this.lastUpdate = LocalDate.now();
+        this.timeStartWorkDay = LocalTime.of(8, 0);
+        this.timeOfLunch = LocalTime.of(12, 0);
+        this.timeOfEndWorkDay = LocalTime.of(17, 0);
+        this.role = Role.USER;
+        this.coeff = 0.0;
     }
 
     public long getChatID() {
@@ -79,16 +94,15 @@ public class User {
         return role;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public double getCoeff() {
+        return coeff;
     }
 
-    public User(long chatID) {
-        this.chatID = chatID;
-        this.lastUpdate = LocalDate.now();
-        this.timeStartWorkDay = LocalTime.of(8, 0);
-        this.timeOfLunch = LocalTime.of(12, 0);
-        this.timeOfEndWorkDay = LocalTime.of(17, 0);
-        this.role = Role.USER;
+    public void setCoeff(double coeff) {
+        this.coeff = coeff;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
