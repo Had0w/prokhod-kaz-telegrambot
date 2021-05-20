@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
+import java.time.LocalTime;
 import java.util.List;
 
 @SpringBootApplication
@@ -23,6 +24,7 @@ public class ProkhodKazTelegrambotApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProkhodKazTelegrambotApplication.class, args);
+//		userService.updateStartOfWorkDay(786831575, LocalTime.of(8, 00));
 	}
 
 }
