@@ -16,7 +16,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +29,6 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
         this.userService = userService;
     }
 
-    private final String COMMAND_PREFIX = "/";
     @Value("${bot.name}")
     private String botName;
     @Value("${bot.token}")
