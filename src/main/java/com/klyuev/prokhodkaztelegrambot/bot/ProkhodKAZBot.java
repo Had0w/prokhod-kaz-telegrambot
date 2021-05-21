@@ -1,6 +1,5 @@
 package com.klyuev.prokhodkaztelegrambot.bot;
 
-import com.klyuev.prokhodkaztelegrambot.command.CommandContainer;
 import com.klyuev.prokhodkaztelegrambot.entity.User;
 import com.klyuev.prokhodkaztelegrambot.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +15,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
-import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,69 +48,6 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
     public ProkhodKAZBot() {
 
     }
-
-//    @Override
-//    public void onUpdateReceived(Update update) {
-//        if (update.hasMessage()) {
-//            Message message = new Message();
-//            SendMessage sendMessage = new SendMessage();
-//            if (update.getMessage().hasText()) {
-//                if(message.getText().equals("/start")) {
-//                    message = update.getMessage();
-//                    sendMessage = new SendMessage();
-//                    if(!userService.containsUser(message.getChatId())) {
-//                        sendMessage.setText("Добро пожаловать!");
-//                        User user = new User(message.getChatId());
-//                        userService.addNewUser(user);
-//                    }
-//                    else {
-//                        User user = userService.findByChatId(message.getChatId()).get();
-//                        sendMessage.setText("С возвращением! Начало вашего рабочего дня в " + user.getTimeStartWorkDay().getHour() + ":" +
-//                                user.getTimeStartWorkDay().getMinute() + " конец в " + user.getTimeOfEndWorkDay().getHour() + ":" +
-//                                user.getTimeOfEndWorkDay().getMinute());
-//                    }
-//                    sendMessage.setChatId(message.getChatId().toString());
-//                    try {
-//                        this.execute(sendMessage);
-//                    } catch (TelegramApiException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                if (update.getMessage().getText().equals("Настройка")) {
-//                    try {
-//                        execute(sendStartInlineKeyBoardMessage(update.getMessage().getChatId()));
-//                    } catch (TelegramApiException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                else {
-//                    sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
-//                    sendMessage.setText(update.getMessage().getText());
-//                    try {
-//                        execute(sendReplyKeyboardMarkupMessage(update.getMessage().getChatId(), update.getMessage().getText()));
-//                    } catch (TelegramApiException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                }
-//            }
-//        } else if (update.hasCallbackQuery()) {
-//            try {
-//                String[] data = update.getCallbackQuery().getData().split(" ");
-//                if(data[1].equals("start")) {
-//                    execute(sendEndInlineKeyBoardMessage(Long.parseLong(data[0])));
-//                }
-//                if(data[1].equals("end")) {
-//
-//                }
-////            update.getMessage().getChatId(); // получим пользователя из бд
-////            update.getCallbackQuery().getData(); // изменим начало рабочего дня
-////                execute(sendReplyKeyboardMarkupMessage(update.getMessage().getChatId()));
-//            } catch (TelegramApiException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     public static SendMessage sendStartInlineKeyBoardMessage(long chatId) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -187,7 +122,6 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
         keyboardFirstButtons.add(new KeyboardButton("Выход"));
         KeyboardRow keyboardButtons2 = new KeyboardRow();
         keyboardButtons2.add(new KeyboardButton("Настройка"));
-        keyboardFirstButtons.add(new KeyboardButton("currentTime"));// создание двух кнопок на этой троке
         keyboardRowList.add(keyboardFirstButtons);
         keyboardRowList.add(keyboardButtons2);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
@@ -201,11 +135,11 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        Message message = update.getMessage();
+        SendMessage sendMessage = new SendMessage();
         if (update.hasMessage()) {
             if (update.getMessage().hasText()) {
                 if (update.getMessage().getText().equals("/start")) {
-                    Message message = update.getMessage();
-                    SendMessage sendMessage = new SendMessage();
                     if (!userService.containsUser(message.getChatId())) {
                         sendMessage.setText("Добро пожаловать!");
                         User user = new User(message.getChatId());
@@ -218,7 +152,8 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                     }
                     sendMessage.setChatId(message.getChatId().toString());
                     try {
-                        this.execute(sendMessage);
+                        this.execute(sendReplyKeyboardMarkupMessage(Long.parseLong(sendMessage.getChatId()), sendMessage.getText()));
+
                     } catch (TelegramApiException e) {
                         e.printStackTrace();
                     }
@@ -230,16 +165,27 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                 }
-                else {
-                    SendMessage sendMessage = new SendMessage();
-                    sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
-                    sendMessage.setText("");
+                else if (update.getMessage().getText().equals("Вход")) {
+                    User user = userService.findByChatId(update.getMessage().getChatId()).get();
+                    userService.setLastUpdate(user.getChatID(), true);
+                    sendMessage.setText("Вы вошли");
+                    sendMessage.setChatId(String.valueOf(user.getChatID()));
                     try {
-                        execute(sendReplyKeyboardMarkupMessage(update.getMessage().getChatId(), update.getMessage().getText()));
+                        this.execute(sendMessage);
                     } catch (TelegramApiException e) {
                         e.printStackTrace();
                     }
-
+                }
+                else if (update.getMessage().getText().equals("Выход")) {
+                    User user = userService.findByChatId(update.getMessage().getChatId()).get();
+                        userService.setLastUpdate(user.getChatID(), false);
+                        sendMessage.setText("Вы вышли");
+                    sendMessage.setChatId(String.valueOf(message.getChatId()));
+                    try {
+                        this.execute(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -254,10 +200,10 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                 if(data[1].equals("end")) {
                     LocalTime localTime = LocalTime.of(Integer.parseInt(data[2]), Integer.parseInt(data[3]));
                     userService.updateEndOfWorkDay(Long.parseLong(data[0]), localTime);
+                    sendMessage.setText("Настройки изменены");
+                    sendMessage.setChatId(data[0]);
+                    execute(sendMessage);
                 }
-//            update.getMessage().getChatId(); // получим пользователя из бд
-//            update.getCallbackQuery().getData(); // изменим начало рабочего дня
-//                execute(sendReplyKeyboardMarkupMessage(update.getMessage().getChatId()));
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }

@@ -20,4 +20,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query(value = "update User user set user.timeOfEndWorkDay = :localTime where user.chatID = :chatId")
     void updateEndOfWorkDay(@Param("chatId") Long chatId, @Param("localTime") LocalTime localTime);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update User user set user.isAtWork = :bool where user.chatID = :chatId")
+    void setLastUpdate(@Param("chatId") Long chatId, @Param("bool")Boolean bool);
 }

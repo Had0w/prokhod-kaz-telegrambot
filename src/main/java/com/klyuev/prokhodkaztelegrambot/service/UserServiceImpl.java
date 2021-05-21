@@ -41,6 +41,11 @@ public class UserServiceImpl implements UserService{
         userRepository.updateEndOfWorkDay(chatId, localTime);
     }
 
+    @Override
+    public void setLastUpdate(Long chatId, Boolean bool) {
+        userRepository.setLastUpdate(chatId, bool);
+    }
+
     public List<User> findAll() {
         return userRepository.findAll();
     }
