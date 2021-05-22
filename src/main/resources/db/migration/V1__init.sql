@@ -6,5 +6,7 @@ timeOfEndWorkDay time with time zone DEFAULT '17:00',
 isAtWork boolean DEFAULT FALSE,
 coeff numeric(1, 1) DEFAULT 0,
 role varchar(20) DEFAULT 'USER',
-lastUpdate timestamp with time zone
+lastUpdate timestamp with time zone,
+lastEntry timestamp with time zone,
+lastExit timestamp with time zone
 );
