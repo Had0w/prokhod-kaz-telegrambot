@@ -15,9 +15,13 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 @Component
 public class ProkhodKAZBot extends TelegramLongPollingBot {
@@ -163,23 +167,47 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                 }
+                /**
+                    При команде "Вход" программа проверяет на значене параметра isAtWork и когда был последний апдейт,
+                 если не в текущий день, то операцуия выролняется
+                 */
                 else if (update.getMessage().getText().equals("Вход")) {
                     User user = userService.findByChatId(update.getMessage().getChatId()).get();
-                    userService.setLastUpdate(user.getChatID(), true);
-                    sendMessage.setText("Вы вошли");
-                    sendMessage.setChatId(String.valueOf(user.getChatID()));
+                    if(user.isAtWork() &&
+                            (user.getLastUpdate().getDayOfMonth() == LocalDate.now().getDayOfMonth() &&
+                    user.getLastUpdate().getDayOfWeek() == LocalDate.now().getDayOfWeek())) {
+                        sendMessage.setText("Вы уже на работе");
+                    }
+                    else {
+                        userService.setLastUpdate(user.getChatID(), true);
+                        sendMessage.setText("Вы вошли");
+                        sendMessage.setChatId(String.valueOf(user.getChatID()));
+                    }
                     try {
+                        sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
                         this.execute(sendMessage);
                     } catch (TelegramApiException e) {
                         e.printStackTrace();
                     }
                 }
+                /**
+                 При команде "Вход" программа проверяет на значене параметра isAtWork и когда был последний апдейт,
+                 если не в текущий день, то операцуия выролняется
+                 */
                 else if (update.getMessage().getText().equals("Выход")) {
                     User user = userService.findByChatId(update.getMessage().getChatId()).get();
+                    if(!user.isAtWork() &&
+                            (user.getLastUpdate().getDayOfMonth() == LocalDate.now().getDayOfMonth() &&
+                                    user.getLastUpdate().getDayOfWeek() == LocalDate.now().getDayOfWeek())) {
+                        sendMessage.setText("Вы уже вышли");
+                    }
+                    else {
                         userService.setLastUpdate(user.getChatID(), false);
                         sendMessage.setText("Вы вышли");
-                    sendMessage.setChatId(String.valueOf(message.getChatId()));
+                        sendMessage.setChatId(String.valueOf(message.getChatId()));
+                    }
                     try {
+                        sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
                         this.execute(sendMessage);
                     } catch (TelegramApiException e) {
                         e.printStackTrace();
@@ -207,5 +235,49 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
             }
         }
             }
+
+    public String late(User user) {
+        LocalTime now = LocalTime.now(ZoneId.of("europe/moscow"));
+        LocalTime begin = user.getTimeStartWorkDay();
+        LocalTime startLunch = user.getTimeOfLunch();
+        LocalTime endLunch = user.getTimeOfLunch().plusHours(1);
+        LocalTime end = user.getTimeOfEndWorkDay();
+        double min10;
+        if(now.isAfter(startLunch) && now.isBefore(endLunch)) { // Если пришел в обед
+            return "Ваше опоздание " + "3.5" + "(Сейчас обед)"; // Костыль! Добавить расчет времени
         }
+        if (now.isAfter(begin) && now.isBefore(end)) {
+            int countOfHours = (now.getHour() - begin.getHour());
+            int countOfMinutes = (now.getMinute() - begin.getMinute());
+            int total = countOfHours * 60 + countOfMinutes;
+            int finHour = total / 60;
+            int finMin = total % 60;
+            min10 = finHour;
+            if ((finMin > 0) && (finMin <= 6)) {
+                min10 = min10 + 0.1;
+            } else if ((finMin > 6) && (finMin <= 12)) {
+                min10 = min10 + 0.2;
+            } else if ((finMin > 12) && (finMin <= 18)) {
+                min10 = min10 + 0.3;
+            } else if ((finMin > 18) && (finMin <= 24)) {
+                min10 = min10 + 0.4;
+            } else if ((finMin > 24) && (finMin <= 30)) {
+                min10 = min10 + 0.5;
+            } else if ((finMin > 30) && (finMin <= 36)) {
+                min10 = min10 + 0.6;
+            } else if ((finMin > 36) && (finMin <= 42)) {
+                min10 = min10 + 0.7;
+            } else if ((finMin > 42) && (finMin <= 48)) {
+                min10 = min10 + 0.8;
+            } else if ((finMin > 48) && (finMin <= 54)) {
+                min10 = min10 + 0.9;
+            }
+            if(now.isAfter(endLunch)) {
+                min10--;
+            }
+            return "Ваше опоздание: " + min10;
+        } else if (now.isBefore(begin)) return "Вы не опоздали";
+        else return "Ваш рабочий день уже закончился:)";
+    }
+    }
 
