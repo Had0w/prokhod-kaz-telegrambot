@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -24,23 +25,23 @@ public class User {
     @Column(name = "isatwork")
     private boolean isAtWork;
     @Column(name = "lastupdate")
-    private LocalDate lastUpdate;
+    private LocalDateTime lastUpdate;
     @Column(name = "role")
     @Enumerated(value = EnumType.STRING)
     private Role role;
     @Column(name = "coeff")
     private double coeff;
     @Column(name = "lastentry")
-    private LocalDate lastEntry;
+    private LocalDateTime lastEntry;
     @Column(name = "lastexit")
-    private LocalDate lastExit;
+    private LocalDateTime lastExit;
 
     public User() {
     }
 
     public User(long chatID) {
         this.chatID = chatID;
-        this.lastUpdate = LocalDate.now();
+//        this.lastUpdate = LocalDateTime.now();
         this.timeStartWorkDay = LocalTime.of(8, 0);
         this.timeOfLunch = LocalTime.of(12, 0);
         this.timeOfEndWorkDay = LocalTime.of(17, 0);
