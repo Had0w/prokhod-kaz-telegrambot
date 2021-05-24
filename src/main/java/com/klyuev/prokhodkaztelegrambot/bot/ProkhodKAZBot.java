@@ -17,11 +17,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 
 @Component
 public class ProkhodKAZBot extends TelegramLongPollingBot {
@@ -50,7 +50,9 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
     public ProkhodKAZBot() {
 
     }
-
+    /**
+     Клавиатуры
+     */
     public static SendMessage sendStartInlineKeyBoardMessage(long chatId) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
@@ -173,14 +175,24 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                  */
                 else if (update.getMessage().getText().equals("Вход")) {
                     User user = userService.findByChatId(update.getMessage().getChatId()).get();
-                    if(user.isAtWork() &&
+                    LocalTime now = LocalTime.now();
+                    if(user.isAtWork() && user.getLastUpdate() != null &&
                             (user.getLastUpdate().getDayOfMonth() == LocalDate.now().getDayOfMonth() &&
                     user.getLastUpdate().getDayOfWeek() == LocalDate.now().getDayOfWeek())) {
                         sendMessage.setText("Вы уже на работе");
                     }
+                    else if(user.getTimeOfEndWorkDay().isBefore(now)) {
+                        sendMessage.setText("Ваш рабочий день уже закончился");
+                    }
                     else {
-                        userService.setLastUpdate(user.getChatID(), true);
-                        sendMessage.setText("Вы вошли");
+                        userService.setIsAtWork(user.getChatID(), true);
+                        if(user.getTimeStartWorkDay().isBefore(now)) {
+                            double coeff = late(user);
+                            sendMessage.setText("Вы вошли, ваше опоздание " + coeff);
+                        }
+                        else {
+                            sendMessage.setText("Вы вошли и не опоздали");
+                        }
                         sendMessage.setChatId(String.valueOf(user.getChatID()));
                     }
                     try {
@@ -196,13 +208,15 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                  */
                 else if (update.getMessage().getText().equals("Выход")) {
                     User user = userService.findByChatId(update.getMessage().getChatId()).get();
-                    if(!user.isAtWork() &&
+                    if(!user.isAtWork() && user.getLastUpdate() != null &&
                             (user.getLastUpdate().getDayOfMonth() == LocalDate.now().getDayOfMonth() &&
                                     user.getLastUpdate().getDayOfWeek() == LocalDate.now().getDayOfWeek())) {
                         sendMessage.setText("Вы уже вышли");
                     }
                     else {
-                        userService.setLastUpdate(user.getChatID(), false);
+                        userService.setIsAtWork(user.getChatID(), false);
+                        LocalDateTime lastUpdate = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
+                        userService.setLastUpdate(user.getChatID(), lastUpdate);
                         sendMessage.setText("Вы вышли");
                         sendMessage.setChatId(String.valueOf(message.getChatId()));
                     }
@@ -235,49 +249,56 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
             }
         }
             }
-
-    public String late(User user) {
-        LocalTime now = LocalTime.now(ZoneId.of("europe/moscow"));
+    /**
+     Метод обновляет и возврощает коэффицинет  опоздания и увеличивает его при необходимости
+     */
+    public double late(User user) {
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
+        LocalDateTime lastUpdate = user.getLastUpdate();
         LocalTime begin = user.getTimeStartWorkDay();
-        LocalTime startLunch = user.getTimeOfLunch();
-        LocalTime endLunch = user.getTimeOfLunch().plusHours(1);
-        LocalTime end = user.getTimeOfEndWorkDay();
-        double min10;
-        if(now.isAfter(startLunch) && now.isBefore(endLunch)) { // Если пришел в обед
-            return "Ваше опоздание " + "3.5" + "(Сейчас обед)"; // Костыль! Добавить расчет времени
+        double coeff = 0.0;
+        if(lastUpdate != null && lastUpdate.getDayOfMonth() == now.getDayOfMonth() && lastUpdate.getDayOfWeek() == now.getDayOfWeek()) {
+            coeff = user.getCoeff();
+            coeff += getDifferent(now.toLocalTime(), lastUpdate.toLocalTime());
         }
-        if (now.isAfter(begin) && now.isBefore(end)) {
-            int countOfHours = (now.getHour() - begin.getHour());
-            int countOfMinutes = (now.getMinute() - begin.getMinute());
-            int total = countOfHours * 60 + countOfMinutes;
-            int finHour = total / 60;
-            int finMin = total % 60;
-            min10 = finHour;
-            if ((finMin > 0) && (finMin <= 6)) {
-                min10 = min10 + 0.1;
-            } else if ((finMin > 6) && (finMin <= 12)) {
-                min10 = min10 + 0.2;
-            } else if ((finMin > 12) && (finMin <= 18)) {
-                min10 = min10 + 0.3;
-            } else if ((finMin > 18) && (finMin <= 24)) {
-                min10 = min10 + 0.4;
-            } else if ((finMin > 24) && (finMin <= 30)) {
-                min10 = min10 + 0.5;
-            } else if ((finMin > 30) && (finMin <= 36)) {
-                min10 = min10 + 0.6;
-            } else if ((finMin > 36) && (finMin <= 42)) {
-                min10 = min10 + 0.7;
-            } else if ((finMin > 42) && (finMin <= 48)) {
-                min10 = min10 + 0.8;
-            } else if ((finMin > 48) && (finMin <= 54)) {
-                min10 = min10 + 0.9;
-            }
-            if(now.isAfter(endLunch)) {
-                min10--;
-            }
-            return "Ваше опоздание: " + min10;
-        } else if (now.isBefore(begin)) return "Вы не опоздали";
-        else return "Ваш рабочий день уже закончился:)";
+        else {
+            coeff = getDifferent(now.toLocalTime(), begin);
+        }
+            lastUpdate = LocalDateTime.now();
+            userService.setLastUpdate(user.getChatID(), lastUpdate);
+            userService.setCoeff(user.getChatID(), coeff);
+        return coeff;
+    }
+    /**
+        Метод возвращает разницу между двумя промежутками
+     */
+    public double getDifferent(LocalTime now, LocalTime begin) {
+        int countOfHours = (now.getHour() - begin.getHour());
+        int countOfMinutes = (now.getMinute() - begin.getMinute());
+        int total = countOfHours * 60 + countOfMinutes;
+        int finHour = total / 60;
+        int finMin = total % 60;
+        double coeff = finHour;
+        if ((finMin > 0) && (finMin <= 6)) {
+            coeff = coeff + 0.1;
+        } else if ((finMin > 6) && (finMin <= 12)) {
+            coeff = coeff + 0.2;
+        } else if ((finMin > 12) && (finMin <= 18)) {
+            coeff = coeff + 0.3;
+        } else if ((finMin > 18) && (finMin <= 24)) {
+            coeff = coeff + 0.4;
+        } else if ((finMin > 24) && (finMin <= 30)) {
+            coeff = coeff + 0.5;
+        } else if ((finMin > 30) && (finMin <= 36)) {
+            coeff = coeff + 0.6;
+        } else if ((finMin > 36) && (finMin <= 42)) {
+            coeff = coeff + 0.7;
+        } else if ((finMin > 42) && (finMin <= 48)) {
+            coeff = coeff + 0.8;
+        } else if ((finMin > 48) && (finMin <= 54)) {
+            coeff = coeff + 0.9;
+        }
+     return coeff;
     }
     }
 

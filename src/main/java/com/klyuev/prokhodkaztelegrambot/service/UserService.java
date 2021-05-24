@@ -2,6 +2,7 @@ package com.klyuev.prokhodkaztelegrambot.service;
 import com.klyuev.prokhodkaztelegrambot.entity.User;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -17,5 +18,9 @@ public interface UserService {
 
     void updateEndOfWorkDay(long chatId, LocalTime localTime);
 
-    void setLastUpdate(Long chatId, Boolean bool);
+    void setIsAtWork(Long chatId, Boolean bool);
+
+    void setLastUpdate(Long chatId, LocalDateTime lastUpdate);
+
+    void setCoeff(Long chatId, Double coeff);
 }
