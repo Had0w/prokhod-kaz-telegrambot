@@ -143,6 +143,9 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
         SendMessage sendMessage = new SendMessage();
         if (update.hasMessage()) {
             if (update.getMessage().hasText()) {
+                /**
+                 * Стартовая команда, проверяет есть ли пользователь по данному chatId в базе, если нет, то создает нового
+                 */
                 if (update.getMessage().getText().equals("/start")) {
                     if (!userService.containsUser(message.getChatId())) {
                         sendMessage.setText("Добро пожаловать!");
@@ -162,6 +165,9 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                         e.printStackTrace();
                     }
                 }
+                /**
+                 * Запускает настройку параметров пользователя
+                 */
                 else if (update.getMessage().getText().equals("Настройка")) {
                     try {
                         execute(sendStartInlineKeyBoardMessage(update.getMessage().getChatId()));
@@ -175,20 +181,24 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                  */
                 else if (update.getMessage().getText().equals("Вход")) {
                     User user = userService.findByChatId(update.getMessage().getChatId()).get();
-                    LocalTime now = LocalTime.now();
-                    if(user.isAtWork() && user.getLastUpdate() != null &&
-                            (user.getLastUpdate().getDayOfMonth() == LocalDate.now().getDayOfMonth() &&
-                    user.getLastUpdate().getDayOfWeek() == LocalDate.now().getDayOfWeek())) {
-                        sendMessage.setText("Вы уже на работе");
+                    LocalDateTime now = LocalDateTime.now();
+                    if(user.getLastUpdate() != null && (user.getLastUpdate().getDayOfMonth() != now.getDayOfMonth() ||
+                            user.getLastUpdate().getDayOfWeek() != now.getDayOfWeek())) {
+                            userService.setCoeff(user.getChatID(), 0.0);
+                            user.setCoeff(0.0);
+                            userService.setIsAtWork(user.getChatID(), false);
                     }
-                    else if(user.getTimeOfEndWorkDay().isBefore(now)) {
+                    if(user.getTimeOfEndWorkDay().isBefore(now.toLocalTime())) {
                         sendMessage.setText("Ваш рабочий день уже закончился");
+                    }
+                    else if(user.isAtWork()) {
+                        sendMessage.setText("Вы уже на работе");
                     }
                     else {
                         userService.setIsAtWork(user.getChatID(), true);
-                        if(user.getTimeStartWorkDay().isBefore(now)) {
+                        if(user.getTimeStartWorkDay().isBefore(now.toLocalTime())) {
                             double coeff = late(user);
-                            sendMessage.setText("Вы вошли, ваше опоздание " + coeff);
+                            sendMessage.setText("Вы вошли, ваше опоздание " + String.format("%.1f", coeff));
                         }
                         else {
                             sendMessage.setText("Вы вошли и не опоздали");
@@ -209,7 +219,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                 else if (update.getMessage().getText().equals("Выход")) {
                     User user = userService.findByChatId(update.getMessage().getChatId()).get();
                     if(!user.isAtWork() && user.getLastUpdate() != null &&
-                            (user.getLastUpdate().getDayOfMonth() == LocalDate.now().getDayOfMonth() &&
+                            (user.getLastUpdate().getDayOfMonth() == LocalDate.now().getDayOfMonth() ||
                                     user.getLastUpdate().getDayOfWeek() == LocalDate.now().getDayOfWeek())) {
                         sendMessage.setText("Вы уже вышли");
                     }
@@ -217,6 +227,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                         userService.setIsAtWork(user.getChatID(), false);
                         LocalDateTime lastUpdate = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
                         userService.setLastUpdate(user.getChatID(), lastUpdate);
+                        userService.setCoeff(user.getChatID(), 0.0);
                         sendMessage.setText("Вы вышли");
                         sendMessage.setChatId(String.valueOf(message.getChatId()));
                     }
@@ -256,13 +267,15 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
         LocalDateTime lastUpdate = user.getLastUpdate();
         LocalTime begin = user.getTimeStartWorkDay();
-        double coeff = 0.0;
+        LocalTime lunch = user.getTimeOfLunch();
+        double coeff = user.getCoeff();
         if(lastUpdate != null && lastUpdate.getDayOfMonth() == now.getDayOfMonth() && lastUpdate.getDayOfWeek() == now.getDayOfWeek()) {
-            coeff = user.getCoeff();
-            coeff += getDifferent(now.toLocalTime(), lastUpdate.toLocalTime());
+//            coeff += getDifferent(now.toLocalTime(), lastUpdate.toLocalTime());
+            coeff = subtractLunch(now.toLocalTime(), lastUpdate.toLocalTime(), lunch, getDifferent(now.toLocalTime(), lastUpdate.toLocalTime()));
         }
         else {
-            coeff = getDifferent(now.toLocalTime(), begin);
+//            coeff += getDifferent(now.toLocalTime(), begin);
+            coeff = subtractLunch(now.toLocalTime(), begin, lunch, getDifferent(now.toLocalTime(), begin));
         }
             lastUpdate = LocalDateTime.now();
             userService.setLastUpdate(user.getChatID(), lastUpdate);
@@ -299,6 +312,34 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
             coeff = coeff + 0.9;
         }
      return coeff;
+    }
+    public double subtractLunch(LocalTime now, LocalTime begin, LocalTime lunch, double coeff) {
+        LocalTime endLunch = lunch.plusHours(1);
+        /**
+         * Если приход и уход был в обед, то коэффициент не увеличивается
+         */
+        if(now.isAfter(lunch) && now.isBefore(endLunch) && begin.isAfter(lunch) && begin.isBefore(endLunch)) {
+            coeff = 0.0;
+        }
+        /**
+         * Если уход до обеда, а приход после, то опоздание уменьшается на 1 час
+         */
+        else if(begin.isBefore(lunch) && now.isAfter(endLunch)) {
+            coeff -= 1.0;
+        }
+        /**
+         * Если уход до обеда, а приход в обед
+         */
+        else if(begin.isBefore(lunch) && now.isAfter(lunch) && now.isBefore(endLunch)) {
+            coeff -= getDifferent(now, lunch);
+        }
+        /**
+         * Если уход в обед, а приход после обеда
+         */
+        else if(begin.isAfter(lunch) && begin.isBefore(endLunch) && now.isAfter(endLunch)) {
+            coeff -= getDifferent(endLunch, begin);
+        }
+        return coeff;
     }
     }
 
