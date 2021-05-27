@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Repository
@@ -24,5 +25,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Transactional
     @Modifying
     @Query(value = "update User user set user.isAtWork = :bool where user.chatID = :chatId")
-    void setLastUpdate(@Param("chatId") Long chatId, @Param("bool")Boolean bool);
+    void setIsAtWork(@Param("chatId") Long chatId, @Param("bool")Boolean bool);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update User user set user.lastUpdate = :lastUpdate where user.chatID = :chatId")
+    void setLastUpdate(@Param("chatId") Long chatId, @Param("lastUpdate") LocalDateTime lastUpdate);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update User user set user.coeff = :coeff where user.chatID = :chatId")
+    void setCoeff(@Param("chatId") Long chatId, @Param("coeff") double coeff);
 }

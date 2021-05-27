@@ -5,6 +5,7 @@ import com.klyuev.prokhodkaztelegrambot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -42,8 +43,18 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void setLastUpdate(Long chatId, Boolean bool) {
-        userRepository.setLastUpdate(chatId, bool);
+    public void setIsAtWork(Long chatId, Boolean bool) {
+        userRepository.setIsAtWork(chatId, bool);
+    }
+
+    @Override
+    public void setLastUpdate(Long chatId, LocalDateTime lastUpdate) {
+        userRepository.setLastUpdate(chatId, lastUpdate);
+    }
+
+    @Override
+    public void setCoeff(Long chatId, Double coeff) {
+        userRepository.setCoeff(chatId, coeff);
     }
 
     public List<User> findAll() {
