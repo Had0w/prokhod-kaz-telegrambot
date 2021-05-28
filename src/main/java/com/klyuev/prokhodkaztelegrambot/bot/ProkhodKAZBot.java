@@ -25,7 +25,7 @@ import java.util.List;
 
 @Component
 public class ProkhodKAZBot extends TelegramLongPollingBot {
-
+    private int balance;
     private UserServiceImpl userService;
 
     @Autowired
@@ -141,6 +141,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         Message message = update.getMessage();
         SendMessage sendMessage = new SendMessage();
+
         if (update.hasMessage()) {
             if (update.getMessage().hasText()) {
                 /**
@@ -227,7 +228,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                         userService.setIsAtWork(user.getChatID(), false);
                         LocalDateTime lastUpdate = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
                         userService.setLastUpdate(user.getChatID(), lastUpdate);
-                        userService.setCoeff(user.getChatID(), 0.0);
+//                        userService.setCoeff(user.getChatID(), 0.0);
                         sendMessage.setText("Вы вышли");
                         sendMessage.setChatId(String.valueOf(message.getChatId()));
                     }
@@ -268,15 +269,15 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
         LocalDateTime lastUpdate = user.getLastUpdate();
         LocalTime begin = user.getTimeStartWorkDay();
         LocalTime lunch = user.getTimeOfLunch();
+        int userBalance = user.getBalance();
         double coeff = user.getCoeff();
         if(lastUpdate != null && lastUpdate.getDayOfMonth() == now.getDayOfMonth() && lastUpdate.getDayOfWeek() == now.getDayOfWeek()) {
-//            coeff += getDifferent(now.toLocalTime(), lastUpdate.toLocalTime());
-            coeff = subtractLunch(now.toLocalTime(), lastUpdate.toLocalTime(), lunch, getDifferent(now.toLocalTime(), lastUpdate.toLocalTime()));
+            coeff += subtractLunch(now.toLocalTime(), lastUpdate.toLocalTime(), lunch, getDifferent(now.toLocalTime(), lastUpdate.toLocalTime(), userBalance));
         }
         else {
-//            coeff += getDifferent(now.toLocalTime(), begin);
-            coeff = subtractLunch(now.toLocalTime(), begin, lunch, getDifferent(now.toLocalTime(), begin));
+            coeff += subtractLunch(now.toLocalTime(), begin, lunch, getDifferent(now.toLocalTime(), begin, userBalance));
         }
+            userService.setBalance(user.getChatID(), balance);
             lastUpdate = LocalDateTime.now();
             userService.setLastUpdate(user.getChatID(), lastUpdate);
             userService.setCoeff(user.getChatID(), coeff);
@@ -285,7 +286,52 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
     /**
         Метод возвращает разницу между двумя промежутками
      */
-    public double getDifferent(LocalTime now, LocalTime begin) {
+    public double getDifferent(LocalTime now, LocalTime begin, int userBalance) {
+        int countOfHours = (now.getHour() - begin.getHour());
+        int countOfMinutes = (now.getMinute() - begin.getMinute());
+        int total = countOfHours * 60 + countOfMinutes;
+        if(userBalance >= total) {
+            userBalance -= total;
+            balance = userBalance;
+            return 0.0;
+        }
+        else {
+            total -= balance;
+            balance = 0;
+        }
+        int finHour = total / 60;
+        int finMin = total % 60;
+        double coeff = finHour;
+        if ((finMin > 0) && (finMin <= 6)) {
+            coeff = coeff + 0.1;
+        } else if ((finMin > 6) && (finMin <= 12)) {
+            coeff = coeff + 0.2;
+        } else if ((finMin > 12) && (finMin <= 18)) {
+            coeff = coeff + 0.3;
+        } else if ((finMin > 18) && (finMin <= 24)) {
+            coeff = coeff + 0.4;
+        } else if ((finMin > 24) && (finMin <= 30)) {
+            coeff = coeff + 0.5;
+        } else if ((finMin > 30) && (finMin <= 36)) {
+            coeff = coeff + 0.6;
+        } else if ((finMin > 36) && (finMin <= 42)) {
+            coeff = coeff + 0.7;
+        } else if ((finMin > 42) && (finMin <= 48)) {
+            coeff = coeff + 0.8;
+        } else if ((finMin > 48) && (finMin <= 54)) {
+            coeff = coeff + 0.9;
+        }
+        balance = 6 - total%6;
+        if(balance == 6) {
+            balance = 0;
+        }
+        /**
+         * Остаток времени, которое пользователь уже использовал
+         */
+     return coeff;
+    }
+
+    public double getDifferentForLunchTime(LocalTime now, LocalTime begin) {
         int countOfHours = (now.getHour() - begin.getHour());
         int countOfMinutes = (now.getMinute() - begin.getMinute());
         int total = countOfHours * 60 + countOfMinutes;
@@ -311,8 +357,12 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
         } else if ((finMin > 48) && (finMin <= 54)) {
             coeff = coeff + 0.9;
         }
-     return coeff;
+        /**
+         * Остаток времени, которое пользователь уже использовал
+         */
+        return coeff;
     }
+
     public double subtractLunch(LocalTime now, LocalTime begin, LocalTime lunch, double coeff) {
         LocalTime endLunch = lunch.plusHours(1);
         /**
@@ -331,13 +381,13 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
          * Если уход до обеда, а приход в обед
          */
         else if(begin.isBefore(lunch) && now.isAfter(lunch) && now.isBefore(endLunch)) {
-            coeff -= getDifferent(now, lunch);
+            coeff -= getDifferentForLunchTime(now, lunch);
         }
         /**
          * Если уход в обед, а приход после обеда
          */
         else if(begin.isAfter(lunch) && begin.isBefore(endLunch) && now.isAfter(endLunch)) {
-            coeff -= getDifferent(endLunch, begin);
+            coeff -= getDifferentForLunchTime(endLunch, begin);
         }
         return coeff;
     }

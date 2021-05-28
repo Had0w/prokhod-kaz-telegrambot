@@ -57,6 +57,11 @@ public class UserServiceImpl implements UserService{
         userRepository.setCoeff(chatId, coeff);
     }
 
+    @Override
+    public void setBalance(Long chatId, int balance) {
+        userRepository.setBalance(chatId, balance);
+    }
+
     public List<User> findAll() {
         return userRepository.findAll();
     }

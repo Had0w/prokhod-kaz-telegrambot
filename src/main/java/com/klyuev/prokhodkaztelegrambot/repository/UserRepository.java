@@ -36,4 +36,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query(value = "update User user set user.coeff = :coeff where user.chatID = :chatId")
     void setCoeff(@Param("chatId") Long chatId, @Param("coeff") double coeff);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update User user set user.balance = :balance where user.chatID = :chatId")
+    void setBalance(@Param("chatId") Long chatId, @Param("balance") int balance);
 }

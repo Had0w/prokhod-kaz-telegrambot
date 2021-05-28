@@ -7,6 +7,5 @@ isAtWork boolean DEFAULT FALSE,
 coeff numeric(2, 1) DEFAULT 0,
 role varchar(20) DEFAULT 'USER',
 lastUpdate timestamp with time zone,
-lastEntry timestamp with time zone,
-lastExit timestamp with time zone
+balance integer
 );

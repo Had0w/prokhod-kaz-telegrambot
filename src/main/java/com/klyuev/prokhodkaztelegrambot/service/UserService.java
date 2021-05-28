@@ -23,4 +23,6 @@ public interface UserService {
     void setLastUpdate(Long chatId, LocalDateTime lastUpdate);
 
     void setCoeff(Long chatId, Double coeff);
+
+    void setBalance(Long chatId, int balance);
 }

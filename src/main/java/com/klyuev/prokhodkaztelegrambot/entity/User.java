@@ -31,10 +31,8 @@ public class User {
     private Role role;
     @Column(name = "coeff")
     private double coeff;
-    @Column(name = "lastentry")
-    private LocalDateTime lastEntry;
-    @Column(name = "lastexit")
-    private LocalDateTime lastExit;
+    @Column(name = "balance")
+    private int balance;
 
     public User() {
     }
