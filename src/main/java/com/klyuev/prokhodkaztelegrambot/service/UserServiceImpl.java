@@ -61,8 +61,4 @@ public class UserServiceImpl implements UserService{
     public void setBalance(Long chatId, int balance) {
         userRepository.setBalance(chatId, balance);
     }
-
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
 }
