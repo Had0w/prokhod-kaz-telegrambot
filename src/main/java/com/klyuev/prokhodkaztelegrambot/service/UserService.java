@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface UserService {
     void addNewUser(User user);
 
-    Optional<User> findByChatId(long chatId);
+    User findByChatId(long chatId);
 
     boolean containsUser(long chatId);
 

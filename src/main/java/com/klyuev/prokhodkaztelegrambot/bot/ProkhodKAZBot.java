@@ -153,7 +153,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                         User user = new User(message.getChatId());
                         userService.addNewUser(user);
                     } else {
-                        User user = userService.findByChatId(message.getChatId()).get();
+                        User user = userService.findByChatId(message.getChatId());
                         sendMessage.setText("С возвращением! Начало вашего рабочего дня в " + user.getTimeStartWorkDay().getHour() + ":" +
                                 user.getTimeStartWorkDay().getMinute() + " конец в " + user.getTimeOfEndWorkDay().getHour() + ":" +
                                 user.getTimeOfEndWorkDay().getMinute());
@@ -181,7 +181,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                  если не в текущий день, то операцуия выролняется
                  */
                 else if (update.getMessage().getText().equals("Вход")) {
-                    User user = userService.findByChatId(update.getMessage().getChatId()).get();
+                    User user = userService.findByChatId(update.getMessage().getChatId());
                     LocalDateTime now = LocalDateTime.now();
                     if(user.getLastUpdate() != null && (user.getLastUpdate().getDayOfMonth() != now.getDayOfMonth() ||
                             user.getLastUpdate().getDayOfWeek() != now.getDayOfWeek())) {
@@ -218,7 +218,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                  если не в текущий день, то операцуия выролняется
                  */
                 else if (update.getMessage().getText().equals("Выход")) {
-                    User user = userService.findByChatId(update.getMessage().getChatId()).get();
+                    User user = userService.findByChatId(update.getMessage().getChatId());
                     if(!user.isAtWork() && user.getLastUpdate() != null &&
                             (user.getLastUpdate().getDayOfMonth() == LocalDate.now().getDayOfMonth() ||
                                     user.getLastUpdate().getDayOfWeek() == LocalDate.now().getDayOfWeek())) {
@@ -296,7 +296,8 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
             return 0.0;
         }
         else {
-            total -= balance;
+            //заменил balance на userBalance для корректонго теста
+            total -= userBalance;
             balance = 0;
         }
         int finHour = total / 60;
