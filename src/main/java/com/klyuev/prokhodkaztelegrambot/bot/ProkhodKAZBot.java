@@ -59,19 +59,27 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton6 = new InlineKeyboardButton();
+        inlineKeyboardButton5.setText("6:45");
+        inlineKeyboardButton5.setCallbackData(chatId + " start 6 44");
         inlineKeyboardButton1.setText("7:00");
-        inlineKeyboardButton1.setCallbackData(chatId + " start 7 0");
+        inlineKeyboardButton1.setCallbackData(chatId + " start 6 59");
         inlineKeyboardButton2.setText("7:30");
-        inlineKeyboardButton2.setCallbackData(chatId + " start 7 30");
+        inlineKeyboardButton2.setCallbackData(chatId + " start 7 29");
         inlineKeyboardButton3.setText("8:00");
-        inlineKeyboardButton3.setCallbackData(chatId + " start 8 0");
+        inlineKeyboardButton3.setCallbackData(chatId + " start 7 59");
+        inlineKeyboardButton6.setText("8:15");
+        inlineKeyboardButton6.setCallbackData(chatId + " start 8 16");
         inlineKeyboardButton4.setText("8:30");
-        inlineKeyboardButton4.setCallbackData(chatId + " start 8 30");
+        inlineKeyboardButton4.setCallbackData(chatId + " start 8 29");
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
+        keyboardButtonsRow1.add(inlineKeyboardButton5);
         keyboardButtonsRow1.add(inlineKeyboardButton1);
         keyboardButtonsRow1.add(inlineKeyboardButton2);
         keyboardButtonsRow2.add(inlineKeyboardButton3);
+        keyboardButtonsRow2.add(inlineKeyboardButton6);
         keyboardButtonsRow2.add(inlineKeyboardButton4);
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow1);
@@ -90,19 +98,27 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton6 = new InlineKeyboardButton();
+        inlineKeyboardButton5.setText("15:45");
+        inlineKeyboardButton5.setCallbackData(chatId + " end 15 46");
         inlineKeyboardButton1.setText("16:00");
-        inlineKeyboardButton1.setCallbackData(chatId + " end 16 0");
+        inlineKeyboardButton1.setCallbackData(chatId + " end 16 1");
         inlineKeyboardButton2.setText("16:30");
-        inlineKeyboardButton2.setCallbackData(chatId + " end 16 30");
+        inlineKeyboardButton2.setCallbackData(chatId + " end 16 31");
         inlineKeyboardButton3.setText("17:00");
-        inlineKeyboardButton3.setCallbackData(chatId + " end 17 0");
+        inlineKeyboardButton3.setCallbackData(chatId + " end 17 1");
+        inlineKeyboardButton6.setText("17:15");
+        inlineKeyboardButton6.setCallbackData(chatId + " end 17 16");
         inlineKeyboardButton4.setText("17:30");
-        inlineKeyboardButton4.setCallbackData(chatId + " end 17 30");
+        inlineKeyboardButton4.setCallbackData(chatId + " end 17 31");
         List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
         List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
+        keyboardButtonsRow1.add(inlineKeyboardButton5);
         keyboardButtonsRow1.add(inlineKeyboardButton1);
         keyboardButtonsRow1.add(inlineKeyboardButton2);
         keyboardButtonsRow2.add(inlineKeyboardButton3);
+        keyboardButtonsRow2.add(inlineKeyboardButton6);
         keyboardButtonsRow2.add(inlineKeyboardButton4);
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow1);
@@ -365,7 +381,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
     }
 
     public double subtractLunch(LocalTime now, LocalTime begin, LocalTime lunch, double coeff) {
-        LocalTime endLunch = lunch.plusHours(1);
+        LocalTime endLunch = lunch.plusMinutes(58);
         /**
          * Если приход и уход был в обед, то коэффициент не увеличивается
          */

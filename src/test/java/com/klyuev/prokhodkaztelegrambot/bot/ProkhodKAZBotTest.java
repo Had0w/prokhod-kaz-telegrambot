@@ -28,7 +28,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = UserServiceImpl.class)
 public class ProkhodKAZBotTest {
@@ -41,11 +41,11 @@ public class ProkhodKAZBotTest {
         List<User> users = new ArrayList<>();
         User user1 = new User();
         user1.setChatID(1);
-        user1.setTimeStartWorkDay(LocalTime.of(8,0));
+        user1.setTimeStartWorkDay(LocalTime.of(7,59));
         user1.setTimeOfLunch(LocalTime.of(12, 0));
         user1.setTimeOfEndWorkDay(LocalTime.of(17, 0));
         user1.setAtWork(false);
-        user1.setBalance(5);
+        user1.setBalance(0);
         User user2 = new User();
         user2.setChatID(1);
         user2.setTimeStartWorkDay(LocalTime.of(8,0));
@@ -68,12 +68,12 @@ public class ProkhodKAZBotTest {
 
     @Test
     public void getDifferent() {
-        LocalTime now = LocalTime.of(8, 26);
+        LocalTime now = LocalTime.of(8, 0);
         User user = userService.findByChatId(1);
         LocalTime begin = user.getTimeStartWorkDay();
         int balance = user.getBalance();
         double coeff = new ProkhodKAZBot().getDifferent(now, begin, balance);
-        double expextedCoeff = 0.4;
+        double expextedCoeff = 0.1;
         Assert.assertEquals(expextedCoeff, coeff, 0.01);
     }
 

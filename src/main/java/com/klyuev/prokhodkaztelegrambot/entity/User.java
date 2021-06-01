@@ -39,10 +39,9 @@ public class User {
 
     public User(long chatID) {
         this.chatID = chatID;
-//        this.lastUpdate = LocalDateTime.now();
-        this.timeStartWorkDay = LocalTime.of(8, 0);
-        this.timeOfLunch = LocalTime.of(12, 0);
-        this.timeOfEndWorkDay = LocalTime.of(17, 0);
+        this.timeStartWorkDay = LocalTime.of(7, 59);
+        this.timeOfLunch = LocalTime.of(12, 1);
+        this.timeOfEndWorkDay = LocalTime.of(17, 1);
         this.role = Role.USER;
         this.coeff = 0.0;
     }
