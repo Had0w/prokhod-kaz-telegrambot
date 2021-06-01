@@ -198,7 +198,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                  */
                 else if (update.getMessage().getText().equals("Вход")) {
                     User user = userService.findByChatId(update.getMessage().getChatId());
-                    LocalDateTime now = LocalDateTime.now();
+                    LocalDateTime now = LocalDateTime.now((ZoneId.of("Europe/Moscow")));
                     if(user.getLastUpdate() != null && (user.getLastUpdate().getDayOfMonth() != now.getDayOfMonth() ||
                             user.getLastUpdate().getDayOfWeek() != now.getDayOfWeek())) {
                             userService.setCoeff(user.getChatID(), 0.0);
@@ -214,7 +214,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                     else {
                         userService.setIsAtWork(user.getChatID(), true);
                         if(user.getTimeStartWorkDay().isBefore(now.toLocalTime())) {
-                            double coeff = late(user);
+                            double coeff = late(user, now);
                             sendMessage.setText("Вы вошли, ваше опоздание " + String.format("%.1f", coeff));
                         }
                         else {
@@ -244,7 +244,6 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                         userService.setIsAtWork(user.getChatID(), false);
                         LocalDateTime lastUpdate = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
                         userService.setLastUpdate(user.getChatID(), lastUpdate);
-//                        userService.setCoeff(user.getChatID(), 0.0);
                         sendMessage.setText("Вы вышли");
                         sendMessage.setChatId(String.valueOf(message.getChatId()));
                     }
@@ -280,8 +279,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
     /**
      Метод обновляет и возврощает коэффицинет  опоздания и увеличивает его при необходимости
      */
-    public double late(User user) {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
+    public double late(User user, LocalDateTime now) {
         LocalDateTime lastUpdate = user.getLastUpdate();
         LocalTime begin = user.getTimeStartWorkDay();
         LocalTime lunch = user.getTimeOfLunch();
