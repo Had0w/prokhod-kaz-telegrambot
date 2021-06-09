@@ -1,1 +1,1 @@
-worker: sh target\bin\ProkhodKazTelegrambot
+worker: sh target\bin\WorkerBot
