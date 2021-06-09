@@ -39,12 +39,12 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
     private String botToken;
     @Override
     public String getBotUsername() {
-        return botName;
+        return "prokhod_KAZ_bot";
     }
 
     @Override
     public String getBotToken() {
-        return botToken;
+        return "1830871878:AAElfBU13wjbvPtfRlxsbL9nE2BySQhug90";
     }
 
     public ProkhodKAZBot() {
