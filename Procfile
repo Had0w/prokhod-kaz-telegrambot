@@ -1,0 +1,1 @@
+web: java -jar target/prokhod-kaz-telegrambot-0.3.0-SNAPSHOT.jar
