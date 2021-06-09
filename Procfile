@@ -1,1 +1,1 @@
-worker: sh target\classes\com\klyuev\prokhodkaztelegrambot\ProkhodKazTelegrambotApplication.class
+worker: sh target\classes\com\klyuev\prokhodkaztelegrambot\ProkhodKazTelegrambotApplication
