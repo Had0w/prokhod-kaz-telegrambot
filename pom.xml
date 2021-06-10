@@ -117,8 +117,8 @@
 					<assembleDirectory>target</assembleDirectory>
 					<programs>
 						<program>
-							<mainClass>ProkhodKazTelegrambotApplication</mainClass>
-							<name>com.klyuev.prokhodkaztelegrambot.ProkhodKazTelegrambotApplication</name>
+							<mainClass>com.klyuev.prokhodkaztelegrambot.ProkhodKazTelegrambotApplication</mainClass>
+							<name>ProkhodBot</name>
 						</program>
 					</programs>
 				</configuration>
