@@ -1,1 +1,1 @@
-worker: sh target/bin/ProkhodBot
+web: sh target/bin/ProkhodBot
