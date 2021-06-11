@@ -1,1 +1,1 @@
-worker: java $JAVA_OPTS -jar target/bin/ProhodKAZBot.jar
+worker: sh target/bin/ProhodKAZBot
