@@ -1,1 +1,1 @@
-worker: sh --include target/bin/ProkhodKAZBot
+worker: sh --include=target/bin/ProkhodKAZBot
