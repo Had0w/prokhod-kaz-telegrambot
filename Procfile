@@ -1,1 +1,1 @@
-worker: sh target/bin/ProhodKAZBot
+worker: sh target/bin/ProkhodKAZBot
