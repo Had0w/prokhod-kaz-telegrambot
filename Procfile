@@ -1,1 +1,1 @@
-worker: sh target/bin/ProkhodKAZBot
+worker: sh target/bin/ProkhodKazTelegramotApplication

@@ -117,7 +117,7 @@
 					<appName>prokhod-kaz-telegrambot</appName>
 					<processTypes>
 						<worker>
-							ProkhodBot
+							ProkhodKazTelegramotApplication
 						</worker>
 					</processTypes>
 				</configuration>
