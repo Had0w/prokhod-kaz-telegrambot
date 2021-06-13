@@ -142,6 +142,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
         keyboardFirstButtons.add(new KeyboardButton("Выход"));
         KeyboardRow keyboardButtons2 = new KeyboardRow();
         keyboardButtons2.add(new KeyboardButton("Настройка"));
+        keyboardButtons2.add(new KeyboardButton("Справка"));
         keyboardRowList.add(keyboardFirstButtons);
         keyboardRowList.add(keyboardButtons2);
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
@@ -249,6 +250,20 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                         sendMessage.setText("Вы вышли");
                         sendMessage.setChatId(String.valueOf(message.getChatId()));
                     }
+                    try {
+                        sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
+                        this.execute(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if(update.getMessage().getText().equals("Справка")) {
+                    String info = "- Данный бот является информационным и не связан с проходной системой предприятия\n" +
+                            "-При нажатии кнопки \"Вход\"  производится расчет коэфициена опоздания, нажмите данную кнопку при использовании " +
+                            "контрольного устройства на ВАШЕМ рабочем месте, не на проходной!\n " +
+                            "-При уходе с рабочего места в течении дня используйте данный бот за пять минут ДО и ПОСЛЕ прохода через основную проходную\n" +
+                            "-Вы можете настроить начало и конец вашего рабочего дня";
+                    sendMessage.setText(info);
                     try {
                         sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
                         this.execute(sendMessage);
