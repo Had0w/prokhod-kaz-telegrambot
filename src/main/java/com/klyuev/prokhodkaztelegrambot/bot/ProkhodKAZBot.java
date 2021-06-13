@@ -15,11 +15,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,14 +165,16 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                  */
                 if (update.getMessage().getText().equals("/start")) {
                     if (!userService.containsUser(message.getChatId())) {
-                        sendMessage.setText("Добро пожаловать!");
+                        sendMessage.setText("Добро пожаловать! По умолчанию начало рабочего дня в 8:00, конец в 17:00");
                         User user = new User(message.getChatId());
                         userService.addNewUser(user);
                     } else {
                         User user = userService.findByChatId(message.getChatId());
-                        sendMessage.setText("С возвращением! Начало вашего рабочего дня в " + user.getTimeStartWorkDay().getHour() + ":" +
-                                user.getTimeStartWorkDay().getMinute() + " конец в " + user.getTimeOfEndWorkDay().getHour() + ":" +
-                                user.getTimeOfEndWorkDay().getMinute());
+                        LocalTime localTimeStart = user.getTimeStartWorkDay().plusMinutes(1);
+                        String lineStart = localTimeStart.format(DateTimeFormatter.ofPattern("HH:mm"));
+                        LocalTime localTimeEnd = user.getTimeOfEndWorkDay().minusMinutes(1);
+                        String lineEnd = localTimeEnd.format(DateTimeFormatter.ofPattern("HH:mm"));
+                        sendMessage.setText("С возвращением! Начало вашего рабочего дня в " + lineStart + " конец в " + lineEnd);
                     }
                     sendMessage.setChatId(message.getChatId().toString());
                     try {

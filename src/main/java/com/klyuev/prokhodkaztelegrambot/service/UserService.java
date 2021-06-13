@@ -1,11 +1,8 @@
 package com.klyuev.prokhodkaztelegrambot.service;
-import com.klyuev.prokhodkaztelegrambot.entity.User;
-import org.springframework.data.repository.query.Param;
 
+import com.klyuev.prokhodkaztelegrambot.entity.User;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Optional;
-
 
 public interface UserService {
     void addNewUser(User user);
