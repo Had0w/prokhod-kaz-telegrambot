@@ -334,7 +334,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
         LocalTime lunch = user.getTimeOfLunch();
         int userBalance = user.getBalance();
         double coeff = user.getCoeff();
-        if(lastUpdate != null && lastUpdate.getDayOfMonth() == now.getDayOfMonth() && lastUpdate.getDayOfWeek() == now.getDayOfWeek()) {
+        if(lastUpdate != null && lastUpdate.toLocalDate().equals(now.toLocalDate())) {
             coeff += subtractLunch(now.toLocalTime(), lastUpdate.toLocalTime(), lunch, getDifferent(now.toLocalTime(), lastUpdate.toLocalTime(), userBalance));
         }
         else {
