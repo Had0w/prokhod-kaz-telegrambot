@@ -15,7 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -224,16 +223,21 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                 else if (update.getMessage().getText().equals("Вход")) {
                     User user = userService.findByChatId(update.getMessage().getChatId());
                     LocalDateTime now = LocalDateTime.now((ZoneId.of("Europe/Moscow")));
-                    if(user.getLastUpdate() != null && (user.getLastUpdate().getDayOfMonth() != now.getDayOfMonth() ||
-                            user.getLastUpdate().getDayOfWeek() != now.getDayOfWeek())) {
-                            userService.setCoeff(user.getChatID(), 0.0);
+                    if(user.getLastUpdate() != null && !user.getLastUpdate().toLocalDate().equals(now.toLocalDate())) {
+                        /**
+                         * Если последнее обновление было не сегодня, то все значения обнуляются, как у юсера так и в репозитории
+                         */
                             user.setCoeff(0.0);
+                            user.setAtWork(false);
+                            user.setBalance(0);
+                            userService.setBalance(user.getChatID(), 0);
+                            userService.setCoeff(user.getChatID(), 0.0);
                             userService.setIsAtWork(user.getChatID(), false);
                     }
                     if(user.getTimeOfEndWorkDay().isBefore(now.toLocalTime())) {
                         sendMessage.setText("Ваш рабочий день уже закончился");
                     }
-                    else if(user.isAtWork()) {
+                    else if(user.getLastUpdate() != null && user.getLastUpdate().toLocalDate().equals(now.toLocalDate()) && user.isAtWork()) {
                         sendMessage.setText("Вы уже на работе");
                     }
                     else {
@@ -246,6 +250,8 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                             sendMessage.setText("Вы вошли и не опоздали");
                         }
                         sendMessage.setChatId(String.valueOf(user.getChatID()));
+                        userService.setLastUpdate(user.getChatID(), LocalDateTime.now());
+                        userService.setIsAtWork(user.getChatID(), true);
                     }
                     try {
                         sendMessage.setChatId(String.valueOf(update.getMessage().getChatId()));
@@ -260,15 +266,19 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
                  */
                 else if (update.getMessage().getText().equals("Выход")) {
                     User user = userService.findByChatId(update.getMessage().getChatId());
-                    if(!user.isAtWork() && user.getLastUpdate() != null &&
-                            (user.getLastUpdate().getDayOfMonth() == LocalDate.now().getDayOfMonth() ||
-                                    user.getLastUpdate().getDayOfWeek() == LocalDate.now().getDayOfWeek())) {
+                    LocalDateTime now = LocalDateTime.now();
+                    if(user.getLastUpdate() != null && !user.getLastUpdate().toLocalDate().equals(now.toLocalDate())) {
+                        userService.setBalance(user.getChatID(), 0);
+                        userService.setCoeff(user.getChatID(), 0.0);
+                    }
+                    if(!user.isAtWork() && user.getLastUpdate() != null && user.getLastUpdate().toLocalDate().equals(now.toLocalDate())) {
                         sendMessage.setText("Вы уже вышли");
                     }
                     else {
                         userService.setIsAtWork(user.getChatID(), false);
                         LocalDateTime lastUpdate = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
                         userService.setLastUpdate(user.getChatID(), lastUpdate);
+
                         sendMessage.setText("Вы вышли");
                         sendMessage.setChatId(String.valueOf(message.getChatId()));
                     }
