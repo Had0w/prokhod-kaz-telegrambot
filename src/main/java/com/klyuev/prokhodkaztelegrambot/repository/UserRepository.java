@@ -11,6 +11,13 @@ import java.time.LocalTime;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    @Query(value = "select count(*) from users", nativeQuery = true)
+    int countAll();
+
+    @Query(value = "select max(user.lastUpdate) from User user")
+    LocalDateTime selectLastUpdate();
+
     @Transactional
     @Modifying
     @Query(value = "update User user set user.timeStartWorkDay = :localTime where user.chatID = :chatId")

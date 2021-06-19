@@ -17,6 +17,7 @@ public class CommandContainer {
         commands.put(CommandName.SETTING.getCommandName(), new SettingCommand(sendBotMessageService));
         commands.put(CommandName.INFO.getCommandName(), new InfoCommand(sendBotMessageService));
         commands.put(CommandName.UNKNOWN.getCommandName(), new UnknownCommand(sendBotMessageService));
+        commands.put(CommandName.STATISTIC.getCommandName(), new StatisticCommand(sendBotMessageService));
     }
 
     public Command retrieveCommand(String commandName) {

@@ -5,6 +5,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public interface UserService {
+
+    int countAll();
+
+    LocalDateTime selectLastUpdate();
+
     void addNewUser(User user);
 
     User findByChatId(long chatId);

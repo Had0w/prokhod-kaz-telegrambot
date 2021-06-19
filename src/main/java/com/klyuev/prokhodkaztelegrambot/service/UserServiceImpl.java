@@ -17,6 +17,16 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public int countAll() {
+        return userRepository.countAll();
+    }
+
+    @Override
+    public LocalDateTime selectLastUpdate() {
+        return userRepository.selectLastUpdate();
+    }
+
+    @Override
     public void addNewUser(User user) {
         userRepository.save(user);
     }

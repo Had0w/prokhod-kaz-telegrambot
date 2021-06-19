@@ -6,7 +6,8 @@ public enum CommandName {
     EXIT("Выход"),
     SETTING("Настройка"),
     INFO("Справка"),
-    UNKNOWN("Неизветсная команда");
+    UNKNOWN("Неизветсная команда"),
+    STATISTIC("/stat");
 
     private final String commandName;
 
