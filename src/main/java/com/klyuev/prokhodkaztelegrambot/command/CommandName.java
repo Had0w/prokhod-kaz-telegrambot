@@ -7,7 +7,8 @@ public enum CommandName {
     SETTING("Настройка"),
     INFO("Справка"),
     UNKNOWN("Неизветсная команда"),
-    STATISTIC("/stat");
+    STATISTIC("/stat"),
+    BALANCE("Баланс");
 
     private final String commandName;
 

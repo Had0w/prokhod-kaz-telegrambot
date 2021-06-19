@@ -39,6 +39,7 @@ public class StartCommand implements Command {
         keyboardFirstButtons.add(new KeyboardButton("Выход"));
         KeyboardRow keyboardButtons2 = new KeyboardRow();
         keyboardButtons2.add(new KeyboardButton("Настройка"));
+        keyboardButtons2.add(new KeyboardButton("Баланс"));
         keyboardButtons2.add(new KeyboardButton("Справка"));
         keyboardRowList.add(keyboardFirstButtons);
         keyboardRowList.add(keyboardButtons2);
