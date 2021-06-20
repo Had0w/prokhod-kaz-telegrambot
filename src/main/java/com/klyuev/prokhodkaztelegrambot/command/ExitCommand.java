@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 /**
- * //                 При команде "Вход" программа проверяет на значене параметра isAtWork и когда был последний апдейт,
- * //                 если не в текущий день, то операцуия выролняется
+При команде "Вход" программа проверяет на значене параметра isAtWork и когда был последний апдейт,
+если не в текущий день, то операцуия выролняется
  */
 @Component
 public class ExitCommand implements Command {
@@ -29,6 +29,7 @@ public class ExitCommand implements Command {
         SendMessage sendMessage = new SendMessage();
         User user = userService.findByChatId(update.getMessage().getChatId());
         LocalDateTime now = LocalDateTime.now();
+        sendMessage.setChatId(String.valueOf(user.getChatID()));
         if (user.getLastUpdate() != null && !user.getLastUpdate().toLocalDate().equals(now.toLocalDate())) {
             userService.setBalance(user.getChatID(), 0);
             userService.setCoeff(user.getChatID(), 0.0);
@@ -41,8 +42,8 @@ public class ExitCommand implements Command {
             userService.setLastUpdate(user.getChatID(), lastUpdate);
 
             text = "Вы вышли";
-            sendMessage.setChatId(String.valueOf(user.getChatID()));
         }
-        sendBotMessageService.sendMessage(user.getChatID(), text);
+        sendMessage.setText(text);
+        sendBotMessageService.sendMessage(sendMessage);
     }
 }

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * //                 * Стартовая команда, проверяет есть ли пользователь по данному chatId в базе, если нет, то создает нового
+ Стартовая команда, проверяет есть ли пользователь по данному chatId в базе, если нет, то создает нового
  */
 @Component
 public class StartCommand implements Command {
@@ -27,6 +27,10 @@ public class StartCommand implements Command {
     public StartCommand(SendBotMessageServiceImpl sendBotMessageService) {
         this.sendBotMessageService = sendBotMessageService;
     }
+
+    /**
+    Основная клавиатура
+     */
 
     public SendMessage sendReplyKeyboardMarkupMessage(long chatId, String message) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();

@@ -49,7 +49,7 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
     }
 
     /**
-     * Клавиатуры
+     * Клавиатура
      */
 
     public static SendMessage sendEndInlineKeyBoardMessage(long chatId) {

@@ -4,6 +4,7 @@ import com.klyuev.prokhodkaztelegrambot.entity.User;
 import com.klyuev.prokhodkaztelegrambot.service.SendBotMessageServiceImpl;
 import com.klyuev.prokhodkaztelegrambot.service.UserServiceImpl;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
@@ -22,6 +23,9 @@ public class InfoCommand implements Command {
                 "контрольного устройства на ВАШЕМ рабочем месте, не на проходной!\n " +
                 "-При уходе с рабочего места в течении дня используйте данный бот за пять минут ДО и ПОСЛЕ прохода через основную проходную\n" +
                 "-Вы можете настроить начало и конец вашего рабочего дня";
-        sendBotMessageService.sendMessage(user.getChatID(), text);
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(String.valueOf(user.getChatID()));
+        sendMessage.setText(text);
+        sendBotMessageService.sendMessage(sendMessage);
     }
 }
