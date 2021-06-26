@@ -98,28 +98,7 @@ public class EnterCommand implements Command {
             total -= userBalance;
             balance = 0;
         }
-        int finHour = total / 60;
-        int finMin = total % 60;
-        double coeff = finHour;
-        if ((finMin > 0) && (finMin <= 6)) {
-            coeff = coeff + 0.1;
-        } else if ((finMin > 6) && (finMin <= 12)) {
-            coeff = coeff + 0.2;
-        } else if ((finMin > 12) && (finMin <= 18)) {
-            coeff = coeff + 0.3;
-        } else if ((finMin > 18) && (finMin <= 24)) {
-            coeff = coeff + 0.4;
-        } else if ((finMin > 24) && (finMin <= 30)) {
-            coeff = coeff + 0.5;
-        } else if ((finMin > 30) && (finMin <= 36)) {
-            coeff = coeff + 0.6;
-        } else if ((finMin > 36) && (finMin <= 42)) {
-            coeff = coeff + 0.7;
-        } else if ((finMin > 42) && (finMin <= 48)) {
-            coeff = coeff + 0.8;
-        } else if ((finMin > 48) && (finMin <= 54)) {
-            coeff = coeff + 0.9;
-        }
+       double coeff = getCoeff(total);
         balance = 6 - total % 6;
         if (balance == 6) {
             balance = 0;
@@ -134,6 +113,14 @@ public class EnterCommand implements Command {
         int countOfHours = (now.getHour() - begin.getHour());
         int countOfMinutes = (now.getMinute() - begin.getMinute());
         int total = countOfHours * 60 + countOfMinutes;
+        double coeff = getCoeff(total);
+        /**
+         * Остаток времени, которое пользователь уже использовал
+         */
+        return coeff;
+    }
+
+    public double getCoeff(int total) {
         int finHour = total / 60;
         int finMin = total % 60;
         double coeff = finHour;
@@ -156,9 +143,6 @@ public class EnterCommand implements Command {
         } else if ((finMin > 48) && (finMin <= 54)) {
             coeff = coeff + 0.9;
         }
-        /**
-         * Остаток времени, которое пользователь уже использовал
-         */
         return coeff;
     }
 
