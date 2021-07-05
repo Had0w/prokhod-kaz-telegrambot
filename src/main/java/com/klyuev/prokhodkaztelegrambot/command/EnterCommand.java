@@ -67,7 +67,7 @@ public class EnterCommand implements Command {
     public double late(User user, LocalDateTime now, UserServiceImpl userService) {
         LocalDateTime lastUpdate = user.getLastUpdate();
         LocalTime begin = user.getTimeStartWorkDay();
-        LocalTime lunch = user.getTimeOfLunch();
+        LocalTime lunch = user.getTimeOfLunch().plusMinutes(1);
         int userBalance = user.getBalance();
         double coeff = user.getCoeff();
         if (lastUpdate != null && lastUpdate.toLocalDate().equals(now.toLocalDate())) {
@@ -147,6 +147,7 @@ public class EnterCommand implements Command {
     }
 
     public double subtractLunch(LocalTime now, LocalTime begin, LocalTime lunch, double coeff) {
+
         LocalTime endLunch = lunch.plusMinutes(58);
         /**
          * Если приход и уход был в обед, то коэффициент не увеличивается
