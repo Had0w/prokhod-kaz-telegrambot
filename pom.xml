@@ -110,41 +110,6 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-<!--			<plugin>-->
-<!--				<groupId>com.heroku.sdk</groupId>-->
-<!--				<artifactId>heroku-maven-plugin</artifactId>-->
-<!--				<version>2.0.8</version>-->
-<!--				<configuration>-->
-<!--					<appName>ProkhodKazTelegramotApplication</appName>-->
-<!--					<processTypes>-->
-<!--						<worker>-->
-<!--							ProkhodKazTelegramotApplication-->
-<!--						</worker>-->
-<!--					</processTypes>-->
-<!--				</configuration>-->
-<!--			</plugin>-->
-<!--			<plugin>-->
-<!--				<groupId>org.codehaus.mojo</groupId>-->
-<!--				<artifactId>appassembler-maven-plugin</artifactId>-->
-<!--				<version>1.1.1</version>-->
-<!--				<configuration>-->
-<!--					<assembleDirectory>target</assembleDirectory>-->
-<!--					<programs>-->
-<!--						<program>-->
-<!--							<mainClass>com.klyuev.prokhodkaztelegrambot.ProkhodKazTelegrambotApplication</mainClass>-->
-<!--							<name>ProkhodBot</name>-->
-<!--						</program>-->
-<!--					</programs>-->
-<!--				</configuration>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<phase>package</phase>-->
-<!--						<goals>-->
-<!--							<goal>assemble</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--			</plugin>-->
 		</plugins>
 	</build>
 </project>
