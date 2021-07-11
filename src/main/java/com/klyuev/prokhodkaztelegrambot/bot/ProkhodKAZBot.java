@@ -23,11 +23,11 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
     private UserServiceImpl userService;
     private final CommandContainer commandContainer;
 
-
     @Autowired
     public void setUserService(UserServiceImpl userService) {
         this.userService = userService;
     }
+
 
     @Value("${bot.name}")
     private String botName;

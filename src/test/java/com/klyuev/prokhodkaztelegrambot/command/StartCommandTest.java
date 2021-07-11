@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class StartCommandTest {
-
     @Mock
     private SendBotMessageServiceImpl sendBotMessageService;
     @Mock
@@ -70,7 +69,7 @@ public class StartCommandTest {
     }
 
     @Test
-    public void executeUserExists() {
+    public void executeIfUserExists() {
         //given
         when(message.getChatId()).thenReturn(2L);
         //when
