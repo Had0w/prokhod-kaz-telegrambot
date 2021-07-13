@@ -76,6 +76,5 @@ public class UserRepositoryTest {
         //then
         User user = userRepository.getOne(2L);
         Assert.assertEquals(LocalTime.of(16, 31), user.getTimeOfEndWorkDay());
-
     }
 }
