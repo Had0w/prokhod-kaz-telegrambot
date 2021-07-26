@@ -1,6 +1,7 @@
 package com.klyuev.prokhodkaztelegrambot.command;
 
 import com.klyuev.prokhodkaztelegrambot.entity.User;
+import com.klyuev.prokhodkaztelegrambot.prototype.UserPrototype;
 import com.klyuev.prokhodkaztelegrambot.service.SendBotMessageServiceImpl;
 import com.klyuev.prokhodkaztelegrambot.service.UserServiceImpl;
 import org.junit.Before;
@@ -84,12 +85,7 @@ class EnterCommandTest {
     @Test
     void lateWhenLeavingAt1201() {
         //given
-        User user = new User();
-        user.setTimeStartWorkDay(LocalTime.of(7, 29));
-        user.setTimeOfEndWorkDay(LocalTime.of(16, 31));
-        user.setCoeff(0.0);
-        user.setAtWork(false);
-        user.setTimeOfLunch(LocalTime.of(12, 1));
+        User user = UserPrototype.createUserPrototype(1);
         LocalDateTime lastUpdate = LocalDateTime.now();
         lastUpdate = lastUpdate.withHour(12).withMinute(1);
         user.setLastUpdate(lastUpdate);
@@ -103,12 +99,7 @@ class EnterCommandTest {
     }
     @Test
     void lateWhenLeavingAt1230() {
-        User user = new User();
-        user.setTimeStartWorkDay(LocalTime.of(7, 29));
-        user.setTimeOfEndWorkDay(LocalTime.of(16, 31));
-        user.setCoeff(0.0);
-        user.setAtWork(false);
-        user.setTimeOfLunch(LocalTime.of(12, 1));
+        User user = UserPrototype.createUserPrototype(1);
         LocalDateTime lastUpdate = LocalDateTime.now();
         lastUpdate = lastUpdate.withHour(12).withMinute(30);
         user.setLastUpdate(lastUpdate);
@@ -122,12 +113,7 @@ class EnterCommandTest {
     }
     @Test
     void lateWhenLeavingAt1130() {
-        User user = new User();
-        user.setTimeStartWorkDay(LocalTime.of(7, 29));
-        user.setTimeOfEndWorkDay(LocalTime.of(16, 31));
-        user.setCoeff(0.0);
-        user.setAtWork(false);
-        user.setTimeOfLunch(LocalTime.of(12, 1));
+        User user = UserPrototype.createUserPrototype(1);
         LocalDateTime lastUpdate = LocalDateTime.now();
         lastUpdate = lastUpdate.withHour(11).withMinute(30);
         user.setLastUpdate(lastUpdate);
@@ -138,5 +124,20 @@ class EnterCommandTest {
         //then
         double expected = 2.5;
         assertEquals(expected, actual);
+    }
+    @Test
+    void lateWhenLeavingAtLunchAndReturn1302() {
+        //given
+        User user = UserPrototype.createUserPrototype(1);
+        LocalDateTime lastUpdate = LocalDateTime.now();
+        lastUpdate = lastUpdate.withHour(12).withMinute(5);
+        user.setLastUpdate(lastUpdate);
+        LocalDateTime now = LocalDateTime.now();
+        now = now.withHour(13).withMinute(5);
+        //when
+        double acrual = underTest.late(user, now, userService);
+        //then
+        double expected = 0.1;
+        assertEquals(expected, acrual);
     }
 }
