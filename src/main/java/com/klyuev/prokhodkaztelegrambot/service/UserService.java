@@ -10,7 +10,7 @@ public interface UserService {
 
     LocalDateTime selectLastUpdate();
 
-    void addNewUser(User user);
+    void saveUser(User user);
 
     User findByChatId(long chatId);
 

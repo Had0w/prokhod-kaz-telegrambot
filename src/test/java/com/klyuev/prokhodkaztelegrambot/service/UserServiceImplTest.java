@@ -14,7 +14,6 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -50,7 +49,7 @@ class UserServiceImplTest {
         //given
         User user = new User();
         //when
-        underTest.addNewUser(user);
+        underTest.saveUser(user);
         //then
         verify(repository).save(user);
     }

@@ -62,7 +62,7 @@ public class StartCommand implements Command {
         if (!userService.containsUser(message.getChatId())) {
             text = "Добро пожаловать! По умолчанию начало рабочего дня в 8:00, конец в 17:00";
             User user = new User(message.getChatId());
-            userService.addNewUser(user);
+            userService.saveUser(user);
         } else {
             User user = userService.findByChatId(message.getChatId());
             LocalTime localTimeStart = user.getTimeStartWorkDay().plusMinutes(1);

@@ -56,7 +56,7 @@ public class StartCommandTest {
         //when
         underTest.execute(update, userService);
         //then
-        verify(userService).addNewUser(userArgumentCaptor.capture());//проверяем, добавлен ли новый пользователь
+        verify(userService).saveUser(userArgumentCaptor.capture());//проверяем, добавлен ли новый пользователь
         Assert.assertEquals(user, userArgumentCaptor.getValue());
         String expectedText = "Добро пожаловать! По умолчанию начало рабочего дня в 8:00, конец в 17:00";
         String expectedId = "1";

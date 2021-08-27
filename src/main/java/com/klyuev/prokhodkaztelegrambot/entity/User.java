@@ -1,12 +1,15 @@
 package com.klyuev.prokhodkaztelegrambot.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
 @Table(name = "users")
+@DynamicUpdate
 @Data
 public class User {
     @Id

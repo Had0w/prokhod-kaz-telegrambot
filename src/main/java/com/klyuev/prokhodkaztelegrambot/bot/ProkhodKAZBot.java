@@ -1,6 +1,7 @@
 package com.klyuev.prokhodkaztelegrambot.bot;
 
 import com.klyuev.prokhodkaztelegrambot.command.CommandContainer;
+import com.klyuev.prokhodkaztelegrambot.entity.User;
 import com.klyuev.prokhodkaztelegrambot.service.SendBotMessageServiceImpl;
 import com.klyuev.prokhodkaztelegrambot.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,16 +114,20 @@ public class ProkhodKAZBot extends TelegramLongPollingBot {
         } else if (update.hasCallbackQuery()) {
             try {
                 String[] data = update.getCallbackQuery().getData().split(" ");
+                User user = userService.findByChatId(Long.parseLong(data[0]));
                 if (data[1].equals("start")) {
                     LocalTime localTime = LocalTime.of(Integer.parseInt(data[2]), Integer.parseInt(data[3]));
-                    userService.updateStartOfWorkDay(Long.parseLong(data[0]), localTime);
+//                    userService.updateStartOfWorkDay(Long.parseLong(data[0]), localTime);
+                    user.setTimeStartWorkDay(localTime);
+                    userService.saveUser(user);
                     execute(sendEndInlineKeyBoardMessage(Long.parseLong(data[0])));
                 }
                 if (data[1].equals("end")) {
                     LocalTime localTime = LocalTime.of(Integer.parseInt(data[2]), Integer.parseInt(data[3]));
-                    userService.updateEndOfWorkDay(Long.parseLong(data[0]), localTime);
+                    user.setTimeOfEndWorkDay(localTime);
                     sendMessage.setText("Настройки изменены");
                     sendMessage.setChatId(data[0]);
+                    userService.saveUser(user);
                     execute(sendMessage);
                 }
             } catch (TelegramApiException e) {

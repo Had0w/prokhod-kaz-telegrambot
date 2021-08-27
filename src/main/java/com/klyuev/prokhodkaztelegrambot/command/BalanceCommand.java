@@ -22,8 +22,9 @@ public class BalanceCommand implements Command {
         if(!user.getLastUpdate().toLocalDate().equals(LocalDateTime.now().toLocalDate())) {
             user.setBalance(0);
             user.setCoeff(0.0);
-            userService.setCoeff(user.getChatID(), user.getCoeff());
-            userService.setBalance(user.getChatID(), user.getBalance());
+//            userService.setCoeff(user.getChatID(), user.getCoeff());
+//            userService.setBalance(user.getChatID(), user.getBalance());
+            userService.saveUser(user);
         }
         SendMessage sendMessage = new SendMessage();
         sendMessage.setText("Остаток минут: " + user.getBalance());
