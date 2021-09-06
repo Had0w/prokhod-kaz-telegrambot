@@ -42,7 +42,6 @@ public class ProkhodKAZBotTest {
     @BeforeEach
     public void init() {
         underTest.setUserService(userService);
-
     }
 
     @Test

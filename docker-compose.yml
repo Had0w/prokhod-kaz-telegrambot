@@ -2,9 +2,28 @@ version: '3.1'
 
 services:
   prokhod-kaz-telegrambot:
+    depends_on:
+      PostgreSQL:
+        condition: service_healthy
     build:
       context: .
     environment:
       - BOT_NAME=${BOT_NAME}
       - BOT_TOKEN=${BOT_TOKEN}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://PostgreSQL:5432/prokhodkazbot
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=11Kosmea9
     restart: always
+  PostgreSQL:
+    image: postgres
+    ports:
+        - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=11Kosmea9
+        - POSTGRES_USER=postgres
+        - POSTGRES_DB=prokhodkazbot
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 10s
+        timeout: 5s
+        retries: 5

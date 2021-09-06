@@ -19,7 +19,7 @@ public class CommandContainerTest {
     public void retrieveCommandEnter() {
        Command command =  new CommandContainer(sendBotMessageService).retrieveCommand("Вход");
        boolean actual = command instanceof EnterCommand;
-        Assert.assertTrue(actual);
+       Assert.assertTrue(actual);
     }
 
     @Test
